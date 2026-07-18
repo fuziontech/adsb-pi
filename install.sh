@@ -32,6 +32,26 @@ DECODER_OPTIONS="--max-range 450 --fix"
 NET_OPTIONS="--net --net-heartbeat 60 --net-ro-size 1300 --net-ro-interval 0.2 --net-ri-port 30001 --net-ro-port 30002 --net-sbs-port 30003 --net-bi-port 30004,30104 --net-bo-port 30005"
 JSON_OPTIONS="--write-json /run/readsb --write-json-every 1"
 EOF
+
+# Debian's readsb package is built without rtlsdr support; build upstream if so.
+if ! /usr/bin/readsb --device-type bogus 2>&1 | grep -q rtlsdr; then
+  echo "==> apt readsb lacks rtlsdr support; building readsb from source"
+  apt-get install -y build-essential librtlsdr-dev libncurses-dev \
+    zlib1g-dev libzstd-dev pkg-config git
+  TMPDIR_BUILD=$(mktemp -d)
+  git clone --depth 1 https://github.com/wiedehopf/readsb.git "$TMPDIR_BUILD/readsb"
+  make -C "$TMPDIR_BUILD/readsb" -j"$(nproc)" RTLSDR=yes
+  install -m755 "$TMPDIR_BUILD/readsb/readsb" /usr/local/bin/readsb
+  rm -rf "$TMPDIR_BUILD"
+  mkdir -p /etc/systemd/system/readsb.service.d
+  cat > /etc/systemd/system/readsb.service.d/adsb-pi.conf <<'EOF'
+[Service]
+ExecStart=
+ExecStart=/usr/local/bin/readsb $RECEIVER_OPTIONS $DECODER_OPTIONS $NET_OPTIONS $JSON_OPTIONS --write-json /run/readsb --quiet
+EOF
+  systemctl daemon-reload
+fi
+
 systemctl enable readsb
 systemctl restart readsb
 
