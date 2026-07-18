@@ -43,7 +43,10 @@ JSON_OPTIONS="--write-json /run/readsb --write-json-every 1"
 EOF
 
 # Debian's readsb package is built without rtlsdr support; build upstream if so.
-if ! /usr/bin/readsb --device-type bogus 2>&1 | grep -q rtlsdr; then
+have_rtlsdr() { "$1" --device-type bogus 2>&1 | grep -q rtlsdr; }
+if have_rtlsdr /usr/local/bin/readsb; then
+  echo "==> /usr/local/bin/readsb already has rtlsdr support"
+elif ! have_rtlsdr /usr/bin/readsb; then
   echo "==> apt readsb lacks rtlsdr support; building readsb from source"
   apt-get install -y build-essential librtlsdr-dev libncurses-dev \
     zlib1g-dev libzstd-dev pkg-config git
@@ -52,6 +55,8 @@ if ! /usr/bin/readsb --device-type bogus 2>&1 | grep -q rtlsdr; then
   make -C "$TMPDIR_BUILD/readsb" -j"$(nproc)" RTLSDR=yes
   install -m755 "$TMPDIR_BUILD/readsb/readsb" /usr/local/bin/readsb
   rm -rf "$TMPDIR_BUILD"
+fi
+if [[ -x /usr/local/bin/readsb ]]; then
   mkdir -p /etc/systemd/system/readsb.service.d
   cat > /etc/systemd/system/readsb.service.d/adsb-pi.conf <<'EOF'
 [Service]
@@ -70,6 +75,7 @@ rm -rf /opt/adsb-pi/radar /opt/adsb-pi/kiosk
 cp -r "$SRC_DIR/radar" /opt/adsb-pi/
 cp -r "$SRC_DIR/kiosk" /opt/adsb-pi/
 chmod +x /opt/adsb-pi/kiosk/adsb-kiosk.sh
+chown -R "$APP_USER:$APP_USER" /opt/adsb-pi
 
 echo "==> Installing adsb-radar systemd service"
 sed "s/^User=.*/User=$APP_USER/" "$SRC_DIR/adsb-radar.service" \
