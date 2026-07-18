@@ -63,7 +63,10 @@ async function poll() {
     const now = performance.now();
     if (state.lastMessages != null && d.messages != null) {
       const dt = (now - state.lastPollT) / 1000;
-      if (dt > 0) state.msgRate = Math.max(0, (d.messages - state.lastMessages) / dt);
+      if (dt > 0) {
+        const inst = Math.max(0, (d.messages - state.lastMessages) / dt);
+        state.msgRate = state.msgRate * 0.6 + inst * 0.4;
+      }
     }
     state.lastMessages = d.messages;
     state.lastPollT = now;

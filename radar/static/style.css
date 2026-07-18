@@ -193,3 +193,10 @@ body::after {
   cursor: pointer;
 }
 #settings button:hover { background: rgba(20, 60, 38, 0.8); }
+
+@media (max-width: 800px) {
+  #hud { font-size: 11px; padding: 6px 8px; flex-wrap: wrap; row-gap: 4px; }
+  #hud .sep { margin: 0 3px; }
+  #hud button { font-size: 10px; padding: 1px 5px; }
+  #hud-right { gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+}
