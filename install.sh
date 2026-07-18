@@ -24,6 +24,15 @@ blacklist rtl2830
 EOF
 modprobe -r dvb_usb_rtl28xxu 2>/dev/null || true
 
+echo "==> Adding udev rule so the readsb user can open the SDR"
+cat > /etc/udev/rules.d/99-adsb-pi-rtl.rules <<'EOF'
+# RTL-SDR sticks: rw for plugdev (the readsb service user is in plugdev)
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="0bda", ATTRS{idProduct}=="2832", GROUP="plugdev", MODE="0660"
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="0bda", ATTRS{idProduct}=="2838", GROUP="plugdev", MODE="0660"
+EOF
+udevadm control --reload-rules
+udevadm trigger -s usb -a idVendor=0bda || true
+
 echo "==> Configuring readsb"
 cat > /etc/default/readsb <<'EOF'
 # adsb-pi readsb configuration
@@ -83,6 +92,12 @@ chown -R "$APP_USER:$APP_USER" "$(dirname "$AUTOSTART")"
 
 IP=$(hostname -I | awk '{print $1}')
 echo
+sleep 3
+if systemctl is-active --quiet readsb && curl -sf http://localhost:8080/api/aircraft | grep -q '"ok": true'; then
+  echo "readsb + radar are up."
+else
+  echo "WARNING: not healthy yet -- check: journalctl -u readsb -n 30"
+fi
 echo "Done."
 echo "  Radar UI:  http://$IP:8080/"
 echo "  Services:  systemctl status readsb adsb-radar"
