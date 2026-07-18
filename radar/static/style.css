@@ -1,0 +1,193 @@
+:root {
+  --grn: #4cff9e;
+  --grn-dim: rgba(100, 220, 160, 0.6);
+  --panel: rgba(2, 18, 11, 0.92);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #02080a;
+  overflow: hidden;
+}
+
+body {
+  font-family: "Courier New", ui-monospace, Menlo, monospace;
+  color: var(--grn);
+  font-size: 13px;
+}
+
+#scope {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  cursor: crosshair;
+}
+body.kiosk #scope { cursor: none; }
+
+/* CRT scanlines + vignette */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.16) 0 1px,
+    transparent 1px 3px
+  );
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 41;
+  background: radial-gradient(ellipse at center, transparent 52%, rgba(0, 0, 0, 0.6) 100%);
+}
+
+#hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  background: linear-gradient(rgba(2, 20, 12, 0.9), rgba(2, 20, 12, 0));
+  text-shadow: 0 0 6px rgba(76, 255, 158, 0.6);
+  letter-spacing: 1px;
+  user-select: none;
+}
+
+#hud .sep { opacity: 0.4; margin: 0 6px; }
+
+#hud-right { display: flex; align-items: center; gap: 10px; }
+
+#hud button {
+  font-family: inherit;
+  font-size: 11px;
+  color: var(--grn);
+  background: rgba(4, 30, 18, 0.7);
+  border: 1px solid rgba(76, 255, 158, 0.4);
+  padding: 2px 8px;
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+#hud button:hover { background: rgba(20, 60, 38, 0.8); }
+#hud button.active {
+  background: var(--grn);
+  color: #02140c;
+  font-weight: bold;
+}
+
+#banner {
+  position: fixed;
+  top: 44px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  color: #ffb347;
+  border: 1px solid #ffb347;
+  background: rgba(30, 16, 2, 0.85);
+  padding: 6px 18px;
+  letter-spacing: 2px;
+  animation: blink 1.2s steps(2) infinite;
+}
+@keyframes blink { 50% { opacity: 0.35; } }
+
+#sidebar {
+  position: fixed;
+  top: 40px;
+  right: 0;
+  bottom: 0;
+  width: 360px;
+  z-index: 55;
+  background: var(--panel);
+  border-left: 1px solid rgba(76, 255, 158, 0.35);
+  padding: 10px 12px;
+  overflow-y: auto;
+}
+#sidebar h2 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  letter-spacing: 3px;
+  border-bottom: 1px solid rgba(76, 255, 158, 0.35);
+  padding-bottom: 6px;
+}
+#sidebar table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+#sidebar th {
+  text-align: left;
+  color: var(--grn-dim);
+  border-bottom: 1px solid rgba(76, 255, 158, 0.25);
+  padding: 3px 4px;
+  font-weight: normal;
+}
+#sidebar td {
+  padding: 3px 4px;
+  border-bottom: 1px solid rgba(76, 255, 158, 0.08);
+  white-space: nowrap;
+}
+#sidebar tbody tr { cursor: pointer; }
+#sidebar tbody tr:hover { background: rgba(76, 255, 158, 0.12); }
+#sidebar tr.sel td { color: #fff; background: rgba(76, 255, 158, 0.18); }
+#sidebar tr.emer td { color: #ff5555; }
+
+#settings {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 70;
+  width: 300px;
+  background: var(--panel);
+  border: 1px solid rgba(76, 255, 158, 0.5);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#settings h2 {
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: 3px;
+  border-bottom: 1px solid rgba(76, 255, 158, 0.35);
+  padding-bottom: 6px;
+}
+#settings label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+#settings input {
+    width: 150px;
+  font-family: inherit;
+  color: var(--grn);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(76, 255, 158, 0.4);
+  padding: 4px 6px;
+}
+#settings .row { display: flex; gap: 8px; }
+#settings button {
+  flex: 1;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--grn);
+  background: rgba(4, 30, 18, 0.7);
+  border: 1px solid rgba(76, 255, 158, 0.4);
+  padding: 5px 8px;
+  cursor: pointer;
+}
+#settings button:hover { background: rgba(20, 60, 38, 0.8); }

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ADSB-PI &middot; RADAR</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<canvas id="scope"></canvas>
+
+<div id="hud">
+  <div id="hud-left">
+    <span id="hud-site">ADSB-PI</span>
+    <span class="sep">&middot;</span>
+    <span id="hud-count">AC 0</span>
+    <span class="sep">&middot;</span>
+    <span id="hud-msgs">0 msg/s</span>
+    <span class="sep">&middot;</span>
+    <span id="hud-maxrange">RNG ---</span>
+  </div>
+  <div id="hud-right">
+    <span id="range-buttons">
+      <button data-range="auto" class="active">AUTO</button>
+      <button data-range="25">25</button>
+      <button data-range="50">50</button>
+      <button data-range="100">100</button>
+      <button data-range="200">200</button>
+    </span>
+    <span id="hud-clock">--:--:--Z</span>
+    <button id="btn-sidebar" title="aircraft list">&#9776;</button>
+    <button id="btn-settings" title="settings">&#9881;</button>
+  </div>
+</div>
+
+<div id="banner" hidden></div>
+
+<aside id="sidebar" hidden>
+  <h2>AIRCRAFT</h2>
+  <table>
+    <thead>
+      <tr><th>FLIGHT</th><th>ALT</th><th>SPD</th><th>DIST</th><th>SQK</th><th>RSSI</th></tr>
+    </thead>
+    <tbody id="ac-rows"></tbody>
+  </table>
+</aside>
+
+<div id="settings" hidden>
+  <h2>SETTINGS</h2>
+  <label>Site name <input id="set-site" maxlength="24"></label>
+  <label>Receiver lat <input id="set-lat" placeholder="37.6213"></label>
+  <label>Receiver lon <input id="set-lon" placeholder="-122.3790"></label>
+  <div class="row">
+    <button id="set-geo">Use browser location</button>
+  </div>
+  <div class="row">
+    <button id="set-save">Save</button>
+    <button id="set-close">Close</button>
+  </div>
+</div>
+
+<script src="/static/radar.js"></script>
+</body>
+</html>

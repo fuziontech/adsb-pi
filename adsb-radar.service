@@ -1,0 +1,14 @@
+[Unit]
+Description=ADS-B Pi radar web server
+After=network.target readsb.service
+Wants=readsb.service
+
+[Service]
+Type=simple
+User=james
+ExecStart=/usr/bin/python3 /opt/adsb-pi/radar/server.py --port 8080 --data /run/readsb/aircraft.json
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
